@@ -25,6 +25,7 @@ namespace PDVStore.Forms
         private Button btnDesativar = null!;
         private bool _mascaraAplicando;
         private string _cnpjOriginal = string.Empty;
+        private string _inscEstadualOriginal = string.Empty;
         private string _telefoneOriginal = string.Empty;
         private string _emailOriginal = string.Empty;
 
@@ -71,6 +72,7 @@ namespace PDVStore.Forms
 
             Controls.Add(new Label { Text = "Inscrição Estadual:", Location = new Point(15, 102), AutoSize = true });
             txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(180, 26) };
+            txtInscEstadual.TextChanged += TxtInscEstadual_TextChanged;
             Controls.Add(txtInscEstadual); 
 
             Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, 145), AutoSize = true });
@@ -154,6 +156,7 @@ namespace PDVStore.Forms
                 txtCnpj.Text = Mascaras.FormatarCpfCnpj(f.Cnpj);
                 txtTelefone.Text = Mascaras.FormatarTelefone(f.Telefone);
                 txtEmail.Text = f.Email;
+                txtInscEstadual.Text = Mascaras.ValidarInscEstadual(f.InscricaoEstadual) ? "Inscrição válida" : "Inscrição inválida"; // Exemplo de validação simples    
             }
         }
 
@@ -172,6 +175,14 @@ namespace PDVStore.Forms
         // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
         //   Mascaras.FormatarTelefone (Helpers).
         private void TxtTelefone_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtTelefone, Mascaras.FormatarTelefone);
+
+        // EVENTO - digitação no campo Inscrição Estadual
+        // O que faz: aplica a máscara de somente dígitos durante a digitação.
+        // Por que existe: padroniza a inscrição estadual do fornecedor e garante o mínimo de 14
+        //   dígitos na validação do salvar.
+        // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
+        //   Mascaras.SomenteDigitos (Helpers).
+        private void TxtInscEstadual_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtInscEstadual, Mascaras.SomenteDigitos);
 
         // O que faz: aplica o formatador recebido sobre o conteúdo do TextBox.
         // Por que existe: alterar txt.Text dentro de TextChanged dispara o evento de novo;
@@ -203,6 +214,7 @@ namespace PDVStore.Forms
             var digitosDoc = Mascaras.SomenteDigitos(txtCnpj.Text);
             var digitosTelefone = Mascaras.SomenteDigitos(txtTelefone.Text);
             string email = txtEmail.Text.Trim();
+            var inscEstadual = Mascaras.SomenteDigitos(txtInscEstadual.Text);
 
             if (!editando || digitosDoc != Mascaras.SomenteDigitos(_cnpjOriginal))
             {
@@ -232,6 +244,16 @@ namespace PDVStore.Forms
                 }
             }
 
+            if (!editando || inscEstadual != Mascaras.SomenteDigitos(_inscEstadualOriginal) || string.IsNullOrWhiteSpace(txtInscEstadual.Text))
+            {
+                bool incsValida = inscEstadual.Length == 14 && Mascaras.ValidarInscEstadual(inscEstadual);
+                if (!incsValida)
+                {
+                    MessageBox.Show("Informe uma inscrição estadual válida.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 var fornecedor = _fornecedorSelecionado ?? new Fornecedor { Ativo = true };
@@ -239,6 +261,7 @@ namespace PDVStore.Forms
                 fornecedor.Cnpj = Mascaras.FormatarCpfCnpj(txtCnpj.Text);
                 fornecedor.Telefone = Mascaras.FormatarTelefone(txtTelefone.Text);
                 fornecedor.Email = email;
+                fornecedor.InscricaoEstadual = inscEstadual;
 
                 await _fornecedorService.SalvarAsync(fornecedor);
 
@@ -301,6 +324,7 @@ namespace PDVStore.Forms
             _telefoneOriginal = string.Empty;
             _emailOriginal = string.Empty;
             txtNome.Focus();
+            txtInscEstadual.Clear();
         }
     }
 }
