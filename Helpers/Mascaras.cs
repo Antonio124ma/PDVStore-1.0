@@ -149,7 +149,7 @@ namespace PDVStore.Helpers
         // não pode ser todos iguais. Aplica os pesos específicos do IE (6..2 sobre 13
         // dígitos) com módulo 11 e compara com o último dígito. Depende de
         // SomenteDigitos. Quem chama: cadastros de fornecedores para barrar IE inválida.
-        public static bool ValidarInscEstadual(string? ie)
+        public static bool ValidarInscricaoEstadual(string? ie)
         {
             if (string.IsNullOrWhiteSpace(ie)) return false;
 
