@@ -2,7 +2,11 @@
 
 ![CI](https://github.com/marciodeandrade1/PDVStore-1.0/actions/workflows/ci.yml/badge.svg)
 
-Sistema de Ponto de Venda (PDV) para pequenas lojas e comércios de bairro. Desenvolvido em **C# / .NET 8** com **WinForms**, **Entity Framework Core** e banco **SQL Server LocalDB**.
+<img src="Docs/images/foto-turma.jpg" alt="Turma do projeto PDVStore" width="600">
+
+*Curso Técnico em Informática — 2026 | SENAC Ji-Paraná*
+
+Sistema de Ponto de Venda (PDV) para pequenas lojas e comércios de bairro. Desenvolvido em **C# / .NET 8** com **WindowsForms**, **Entity Framework Core** e banco **SQL Server LocalDB**.
 
 ## Funcionalidades
 

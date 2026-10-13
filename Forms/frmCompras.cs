@@ -205,6 +205,12 @@ namespace PDVStore.Forms
                 MessageBox.Show("Informe um preço de custo válido.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (!decimal.TryParse(txtNota.Text, out decimal nota) || nota <= 0)
+            {
+                MessageBox.Show("Informe um número de nota válido.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
 
             var existente = _itens.FirstOrDefault(i => i.ProdutoId == produto.Id);
             if (existente != null)
@@ -257,6 +263,7 @@ namespace PDVStore.Forms
                 MessageBox.Show("Selecione um fornecedor.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
 
             var compra = new Compra
             {

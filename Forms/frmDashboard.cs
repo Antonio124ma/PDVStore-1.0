@@ -74,7 +74,7 @@ namespace PDVStore.Forms
             btnExportarExcel.Click += ExportarExcel;
 
             // Totais
-            var grpTotais = new GroupBox { Text = "Resumo do período", Location = new Point(15, 62), Size = new Size(1290, 110) };
+            var grpTotais = new GroupBox { Text = "Resumo do período", Location = new Point(15, 50), Size = new Size(1290, 145) };
 
             lblTotal = new Label { Text = "Total de vendas: R$ 0,00", Location = new Point(15, 28), AutoSize = true, Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = Color.DarkGreen };
             lblQtdVendas = new Label { Text = "Quantidade de vendas: 0", Location = new Point(15, 60), AutoSize = true, Font = new Font("Segoe UI", 11F) };
@@ -84,11 +84,11 @@ namespace PDVStore.Forms
             Controls.Add(grpTotais);
 
             // Itens mais vendidos
-            var grpVendidos = new GroupBox { Text = "Itens mais vendidos", Location = new Point(15, 185), Size = new Size(640, 430), Anchor = AnchorStyles.Top | AnchorStyles.Left };
+            var grpVendidos = new GroupBox { Text = "Itens mais vendidos", Location = new Point(15, 195), Size = new Size(640, 420), Anchor = AnchorStyles.Top | AnchorStyles.Left };
             dgvMaisVendidos = new DataGridView
             {
                 Location = new Point(10, 24),
-                Size = new Size(620, 395),
+                Size = new Size(620, 385),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 ReadOnly = true,
                 AllowUserToAddRows = false,
@@ -104,11 +104,11 @@ namespace PDVStore.Forms
             Controls.Add(grpVendidos);
 
             // Alertas de estoque
-            var grpAlertas = new GroupBox { Text = "Alertas de estoque mínimo", Location = new Point(665, 185), Size = new Size(330, 430), Anchor = AnchorStyles.Top | AnchorStyles.Left };
+            var grpAlertas = new GroupBox { Text = "Alertas de estoque mínimo", Location = new Point(665, 195), Size = new Size(330, 420), Anchor = AnchorStyles.Top | AnchorStyles.Left };
             dgvAlertasEstoque = new DataGridView
             {
                 Location = new Point(10, 24),
-                Size = new Size(310, 395),
+                Size = new Size(310, 385),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 ReadOnly = true,
                 AllowUserToAddRows = false,

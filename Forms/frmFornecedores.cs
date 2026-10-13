@@ -8,7 +8,8 @@ using System.Windows.Forms;
 
 namespace PDVStore.Forms
 {
-    public class frmFornecedores : Form
+    public class 
+        frmFornecedores : Form
     {
         private readonly FornecedorService _fornecedorService;
         private Fornecedor? _fornecedorSelecionado;
@@ -18,11 +19,13 @@ namespace PDVStore.Forms
         private TextBox txtCnpj = null!;
         private TextBox txtTelefone = null!;
         private TextBox txtEmail = null!;
+        private TextBox txtInscEstadual = null!;
         private Button btnSalvar = null!;
         private Button btnNovo = null!;
         private Button btnDesativar = null!;
         private bool _mascaraAplicando;
         private string _cnpjOriginal = string.Empty;
+        private string _inscEstadualOriginal = string.Empty;
         private string _telefoneOriginal = string.Empty;
         private string _emailOriginal = string.Empty;
 
@@ -67,21 +70,26 @@ namespace PDVStore.Forms
             txtCnpj.TextChanged += TxtCnpj_TextChanged;
             Controls.Add(txtCnpj);
 
-            Controls.Add(new Label { Text = "Telefone:", Location = new Point(15, y + 85), AutoSize = true });
-            txtTelefone = new TextBox { Location = new Point(150, y + 80), Size = new Size(180, 26) };
-            txtTelefone.TextChanged += TxtTelefone_TextChanged;
-            Controls.Add(txtTelefone);
+            Controls.Add(new Label { Text = "Inscrição Estadual:", Location = new Point(15, 102), AutoSize = true });
+            txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(180, 26) };
+            txtInscEstadual.TextChanged += TxtInscEstadual_TextChanged;
+            Controls.Add(txtInscEstadual); 
 
-            Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, y += dy), AutoSize = true });
-            txtEmail = new TextBox { Location = new Point(150, y - 4), Size = new Size(380, 26) };
+            Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, 145), AutoSize = true });
+            txtEmail = new TextBox { Location = new Point(150, 140), Size = new Size(380, 26) };
             Controls.Add(txtEmail);
 
-            btnSalvar = new Button { Text = "Salvar", Location = new Point(150, y + 80), Size = new Size(110, 32), BackColor = Color.ForestGreen, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
-            btnNovo = new Button { Text = "Novo", Location = new Point(270, y + 80), Size = new Size(90, 32), FlatStyle = FlatStyle.Flat };
-            btnDesativar = new Button { Text = "Desativar", Location = new Point(370, y + 80), Size = new Size(100, 32), BackColor = Color.Firebrick, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            Controls.Add(new Label { Text = "Telefone:", Location = new Point(15, 185), AutoSize = true });
+            txtTelefone = new TextBox { Location = new Point(150, 180), Size = new Size(180, 26) };
+            txtTelefone.TextChanged += TxtTelefone_TextChanged;
+            Controls.Add(txtTelefone);
+  
+            btnSalvar = new Button { Text = "Salvar", Location = new Point(560, y + 70), Size = new Size(110, 32), BackColor = Color.ForestGreen, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnNovo = new Button { Text = "Novo", Location = new Point(680, y + 70), Size = new Size(90, 32), FlatStyle = FlatStyle.Flat };
+            btnDesativar = new Button { Text = "Desativar", Location = new Point(780, y + 70), Size = new Size(100, 32), BackColor = Color.Firebrick, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
 
-            var btnExportarPdf = new Button { Text = "Exportar PDF", Location = new Point(480, y + 80), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
-            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(610, y + 80), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
+            var btnExportarPdf = new Button { Text = "Exportar PDF", Location = new Point(630, y + 110), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
+            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(760, y + 110), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
 
             btnSalvar.Click += async (_, _) => await SalvarAsync();
             btnNovo.Click += (_, _) => LimparCampos();
@@ -102,10 +110,11 @@ namespace PDVStore.Forms
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Id", HeaderText = "ID", DataPropertyName = "Id", Width = 50 });
-            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nome", HeaderText = "Nome", DataPropertyName = "Nome", Width = 260 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nome", HeaderText = "Nome", DataPropertyName = "Nome", Width = 180 });
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cnpj", HeaderText = "CNPJ", DataPropertyName = "Cnpj", Width = 150 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "InscEstadual", HeaderText = "InscEstadual", DataPropertyName = "InscEstadual", Width = 150});
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Tel", HeaderText = "Telefone", DataPropertyName = "Telefone", Width = 130 });
-            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Email", HeaderText = "E-mail", DataPropertyName = "Email", Width = 200 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Email", HeaderText = "E-mail", DataPropertyName = "Email", Width = 170 });
             foreach (DataGridViewColumn c in dgvFornecedores.Columns) c.FillWeight = Math.Max(50, c.Width);
             dgvFornecedores.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvFornecedores.SelectionChanged += (_, _) => SelecionarFornecedor();
@@ -147,6 +156,7 @@ namespace PDVStore.Forms
                 txtCnpj.Text = Mascaras.FormatarCpfCnpj(f.Cnpj);
                 txtTelefone.Text = Mascaras.FormatarTelefone(f.Telefone);
                 txtEmail.Text = f.Email;
+                txtInscEstadual.Text = Mascaras.ValidarInscEstadual(f.InscricaoEstadual) ? "Inscrição válida" : "Inscrição inválida"; // Exemplo de validação simples    
             }
         }
 
@@ -165,6 +175,14 @@ namespace PDVStore.Forms
         // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
         //   Mascaras.FormatarTelefone (Helpers).
         private void TxtTelefone_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtTelefone, Mascaras.FormatarTelefone);
+
+        // EVENTO - digitação no campo Inscrição Estadual
+        // O que faz: aplica a máscara de somente dígitos durante a digitação.
+        // Por que existe: padroniza a inscrição estadual do fornecedor e garante o mínimo de 14
+        //   dígitos na validação do salvar.
+        // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
+        //   Mascaras.SomenteDigitos (Helpers).
+        private void TxtInscEstadual_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtInscEstadual, Mascaras.SomenteDigitos);
 
         // O que faz: aplica o formatador recebido sobre o conteúdo do TextBox.
         // Por que existe: alterar txt.Text dentro de TextChanged dispara o evento de novo;
@@ -196,6 +214,7 @@ namespace PDVStore.Forms
             var digitosDoc = Mascaras.SomenteDigitos(txtCnpj.Text);
             var digitosTelefone = Mascaras.SomenteDigitos(txtTelefone.Text);
             string email = txtEmail.Text.Trim();
+            var inscEstadual = Mascaras.SomenteDigitos(txtInscEstadual.Text);
 
             if (!editando || digitosDoc != Mascaras.SomenteDigitos(_cnpjOriginal))
             {
@@ -225,6 +244,16 @@ namespace PDVStore.Forms
                 }
             }
 
+            if (!editando || inscEstadual != Mascaras.SomenteDigitos(_inscEstadualOriginal) || string.IsNullOrWhiteSpace(txtInscEstadual.Text))
+            {
+                bool incsValida = inscEstadual.Length == 14 && Mascaras.ValidarInscEstadual(inscEstadual);
+                if (!incsValida)
+                {
+                    MessageBox.Show("Informe uma inscrição estadual válida.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 var fornecedor = _fornecedorSelecionado ?? new Fornecedor { Ativo = true };
@@ -232,6 +261,7 @@ namespace PDVStore.Forms
                 fornecedor.Cnpj = Mascaras.FormatarCpfCnpj(txtCnpj.Text);
                 fornecedor.Telefone = Mascaras.FormatarTelefone(txtTelefone.Text);
                 fornecedor.Email = email;
+                fornecedor.InscricaoEstadual = inscEstadual;
 
                 await _fornecedorService.SalvarAsync(fornecedor);
 
@@ -294,6 +324,7 @@ namespace PDVStore.Forms
             _telefoneOriginal = string.Empty;
             _emailOriginal = string.Empty;
             txtNome.Focus();
+            txtInscEstadual.Clear();
         }
     }
 }
