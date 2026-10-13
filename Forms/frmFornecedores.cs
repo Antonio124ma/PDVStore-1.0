@@ -8,7 +8,8 @@ using System.Windows.Forms;
 
 namespace PDVStore.Forms
 {
-    public class frmFornecedores : Form
+    public class 
+        frmFornecedores : Form
     {
         private readonly FornecedorService _fornecedorService;
         private Fornecedor? _fornecedorSelecionado;
@@ -69,8 +70,8 @@ namespace PDVStore.Forms
             Controls.Add(txtCnpj);
 
             Controls.Add(new Label { Text = "Inscrição Estadual:", Location = new Point(15, 102), AutoSize = true });
-            txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(250, 26) };
-            Controls.Add(txtInscEstadual);
+            txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(180, 26) };
+            Controls.Add(txtInscEstadual); 
 
             Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, 145), AutoSize = true });
             txtEmail = new TextBox { Location = new Point(150, 140), Size = new Size(380, 26) };
@@ -107,10 +108,11 @@ namespace PDVStore.Forms
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Id", HeaderText = "ID", DataPropertyName = "Id", Width = 50 });
-            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nome", HeaderText = "Nome", DataPropertyName = "Nome", Width = 260 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nome", HeaderText = "Nome", DataPropertyName = "Nome", Width = 180 });
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cnpj", HeaderText = "CNPJ", DataPropertyName = "Cnpj", Width = 150 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "InscEstadual", HeaderText = "InscEstadual", DataPropertyName = "InscEstadual", Width = 150});
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Tel", HeaderText = "Telefone", DataPropertyName = "Telefone", Width = 130 });
-            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Email", HeaderText = "E-mail", DataPropertyName = "Email", Width = 200 });
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Email", HeaderText = "E-mail", DataPropertyName = "Email", Width = 170 });
             foreach (DataGridViewColumn c in dgvFornecedores.Columns) c.FillWeight = Math.Max(50, c.Width);
             dgvFornecedores.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvFornecedores.SelectionChanged += (_, _) => SelecionarFornecedor();
