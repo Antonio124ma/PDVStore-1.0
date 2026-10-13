@@ -18,6 +18,7 @@ namespace PDVStore.Forms
         private TextBox txtCnpj = null!;
         private TextBox txtTelefone = null!;
         private TextBox txtEmail = null!;
+        private TextBox txtInscEstadual = null!;
         private Button btnSalvar = null!;
         private Button btnNovo = null!;
         private Button btnDesativar = null!;
@@ -67,21 +68,25 @@ namespace PDVStore.Forms
             txtCnpj.TextChanged += TxtCnpj_TextChanged;
             Controls.Add(txtCnpj);
 
-            Controls.Add(new Label { Text = "Telefone:", Location = new Point(15, y + 85), AutoSize = true });
-            txtTelefone = new TextBox { Location = new Point(150, y + 80), Size = new Size(180, 26) };
-            txtTelefone.TextChanged += TxtTelefone_TextChanged;
-            Controls.Add(txtTelefone);
+            Controls.Add(new Label { Text = "Inscrição Estadual:", Location = new Point(15, 102), AutoSize = true });
+            txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(250, 26) };
+            Controls.Add(txtInscEstadual);
 
-            Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, y += dy), AutoSize = true });
-            txtEmail = new TextBox { Location = new Point(150, y - 4), Size = new Size(380, 26) };
+            Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, 145), AutoSize = true });
+            txtEmail = new TextBox { Location = new Point(150, 140), Size = new Size(380, 26) };
             Controls.Add(txtEmail);
 
-            btnSalvar = new Button { Text = "Salvar", Location = new Point(150, y + 80), Size = new Size(110, 32), BackColor = Color.ForestGreen, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
-            btnNovo = new Button { Text = "Novo", Location = new Point(270, y + 80), Size = new Size(90, 32), FlatStyle = FlatStyle.Flat };
-            btnDesativar = new Button { Text = "Desativar", Location = new Point(370, y + 80), Size = new Size(100, 32), BackColor = Color.Firebrick, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            Controls.Add(new Label { Text = "Telefone:", Location = new Point(15, 185), AutoSize = true });
+            txtTelefone = new TextBox { Location = new Point(150, 180), Size = new Size(180, 26) };
+            txtTelefone.TextChanged += TxtTelefone_TextChanged;
+            Controls.Add(txtTelefone);
+  
+            btnSalvar = new Button { Text = "Salvar", Location = new Point(560, y + 70), Size = new Size(110, 32), BackColor = Color.ForestGreen, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
+            btnNovo = new Button { Text = "Novo", Location = new Point(680, y + 70), Size = new Size(90, 32), FlatStyle = FlatStyle.Flat };
+            btnDesativar = new Button { Text = "Desativar", Location = new Point(780, y + 70), Size = new Size(100, 32), BackColor = Color.Firebrick, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
 
-            var btnExportarPdf = new Button { Text = "Exportar PDF", Location = new Point(480, y + 80), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
-            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(610, y + 80), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
+            var btnExportarPdf = new Button { Text = "Exportar PDF", Location = new Point(630, y + 110), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
+            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(760, y + 110), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
 
             btnSalvar.Click += async (_, _) => await SalvarAsync();
             btnNovo.Click += (_, _) => LimparCampos();
