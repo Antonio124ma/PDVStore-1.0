@@ -144,5 +144,31 @@ namespace PDVStore.Helpers
 
             return d[12] - '0' == dig1 && d[13] - '0' == dig2;
         }
+        // Valida uma inscrição estadual (IE) do estado de São Paulo (SP) usando o
+        // algoritmo oficial do dígito verificador. Regras: precisa ter 14 dígitos e
+        // não pode ser todos iguais. Aplica os pesos específicos do IE (6..2 sobre 13
+        // dígitos) com módulo 11 e compara com o último dígito. Depende de
+        // SomenteDigitos. Quem chama: cadastros de fornecedores para barrar IE inválida.
+        public static bool ValidarInscricaoEstadual(string? ie)
+        {
+            if (string.IsNullOrWhiteSpace(ie)) return false;
+
+            // reuse SomenteDigitos from this class
+            var numeros = SomenteDigitos(ie);
+            if (numeros.Length != 14) return false;
+
+            int[] pesos = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+            int soma = 0;
+            for (int i = 0; i < 13; i++)
+                soma += (numeros[i] - '0') * pesos[i];
+
+            int dv = 11 - (soma % 11);
+            if (dv == 10) dv = 1;
+            else if (dv == 11) dv = 0;
+
+            return dv == (numeros[13] - '0');
+        }
+
     }
 }

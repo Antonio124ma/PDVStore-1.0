@@ -19,12 +19,13 @@ namespace PDVStore.Forms
         private TextBox txtCnpj = null!;
         private TextBox txtTelefone = null!;
         private TextBox txtEmail = null!;
-        private TextBox txtInscEstadual = null!;
+        private TextBox txtInscricaoEstadual = null!;
         private Button btnSalvar = null!;
         private Button btnNovo = null!;
         private Button btnDesativar = null!;
         private bool _mascaraAplicando;
         private string _cnpjOriginal = string.Empty;
+        private string _inscEstadualOriginal = string.Empty;
         private string _telefoneOriginal = string.Empty;
         private string _emailOriginal = string.Empty;
 
@@ -70,8 +71,9 @@ namespace PDVStore.Forms
             Controls.Add(txtCnpj);
 
             Controls.Add(new Label { Text = "Inscrição Estadual:", Location = new Point(15, 102), AutoSize = true });
-            txtInscEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(180, 26) };
-            Controls.Add(txtInscEstadual); 
+            txtInscricaoEstadual = new TextBox { Location = new Point(150, 97), Size = new Size(180, 26) };
+            txtInscricaoEstadual.TextChanged += TxtInscricaoEstadual_TextChanged;
+            Controls.Add(txtInscricaoEstadual); 
 
             Controls.Add(new Label { Text = "E-mail:", Location = new Point(15, 145), AutoSize = true });
             txtEmail = new TextBox { Location = new Point(150, 140), Size = new Size(380, 26) };
@@ -110,7 +112,7 @@ namespace PDVStore.Forms
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Id", HeaderText = "ID", DataPropertyName = "Id", Width = 50 });
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nome", HeaderText = "Nome", DataPropertyName = "Nome", Width = 180 });
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cnpj", HeaderText = "CNPJ", DataPropertyName = "Cnpj", Width = 150 });
-            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "InscEstadual", HeaderText = "InscEstadual", DataPropertyName = "InscEstadual", Width = 150});
+            dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "InscricaoEstadual", HeaderText = "Inscrição Estadual", DataPropertyName = "InscricaoEstadual", Width = 150});
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Tel", HeaderText = "Telefone", DataPropertyName = "Telefone", Width = 130 });
             dgvFornecedores.Columns.Add(new DataGridViewTextBoxColumn { Name = "Email", HeaderText = "E-mail", DataPropertyName = "Email", Width = 170 });
             foreach (DataGridViewColumn c in dgvFornecedores.Columns) c.FillWeight = Math.Max(50, c.Width);
@@ -148,12 +150,15 @@ namespace PDVStore.Forms
             {
                 _fornecedorSelecionado = f;
                 _cnpjOriginal = f.Cnpj ?? string.Empty;
+                _inscEstadualOriginal = f.InscricaoEstadual ?? string.Empty;
                 _telefoneOriginal = f.Telefone ?? string.Empty;
                 _emailOriginal = f.Email ?? string.Empty;
                 txtNome.Text = f.Nome;
                 txtCnpj.Text = Mascaras.FormatarCpfCnpj(f.Cnpj);
+                txtInscricaoEstadual.Text = f.InscricaoEstadual;
                 txtTelefone.Text = Mascaras.FormatarTelefone(f.Telefone);
                 txtEmail.Text = f.Email;
+                txtInscricaoEstadual.Text = Mascaras.ValidarInscricaoEstadual(f.InscricaoEstadual) ? "Inscrição válida" : "Inscrição inválida"; // Exemplo de validação simples    
             }
         }
 
@@ -172,6 +177,14 @@ namespace PDVStore.Forms
         // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
         //   Mascaras.FormatarTelefone (Helpers).
         private void TxtTelefone_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtTelefone, Mascaras.FormatarTelefone);
+
+        // EVENTO - digitação no campo Inscrição Estadual
+        // O que faz: aplica a máscara de somente dígitos durante a digitação.
+        // Por que existe: padroniza a inscrição estadual do fornecedor e garante o mínimo de 14
+        //   dígitos na validação do salvar.
+        // Dependências: chamado pelo TextChanged; delega a AplicarMascara() com
+        //   Mascaras.SomenteDigitos (Helpers).
+        private void TxtInscricaoEstadual_TextChanged(object? sender, EventArgs e) => AplicarMascara(txtInscricaoEstadual, Mascaras.SomenteDigitos);
 
         // O que faz: aplica o formatador recebido sobre o conteúdo do TextBox.
         // Por que existe: alterar txt.Text dentro de TextChanged dispara o evento de novo;
@@ -203,6 +216,7 @@ namespace PDVStore.Forms
             var digitosDoc = Mascaras.SomenteDigitos(txtCnpj.Text);
             var digitosTelefone = Mascaras.SomenteDigitos(txtTelefone.Text);
             string email = txtEmail.Text.Trim();
+            var inscEstadual = Mascaras.SomenteDigitos(txtInscricaoEstadual.Text);
 
             if (!editando || digitosDoc != Mascaras.SomenteDigitos(_cnpjOriginal))
             {
@@ -232,13 +246,25 @@ namespace PDVStore.Forms
                 }
             }
 
+            if (!editando || inscEstadual != Mascaras.SomenteDigitos(_inscEstadualOriginal) || string.IsNullOrWhiteSpace(txtInscricaoEstadual.Text))
+            {
+                bool incsValida = inscEstadual.Length == 14 && Mascaras.ValidarInscricaoEstadual(inscEstadual);
+                if (!incsValida)
+                {
+                    MessageBox.Show("Informe uma inscrição estadual válida.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             try
             {
                 var fornecedor = _fornecedorSelecionado ?? new Fornecedor { Ativo = true };
                 fornecedor.Nome = txtNome.Text.Trim();
                 fornecedor.Cnpj = Mascaras.FormatarCpfCnpj(txtCnpj.Text);
+                fornecedor.InscricaoEstadual = txtInscricaoEstadual.Text.Trim();
                 fornecedor.Telefone = Mascaras.FormatarTelefone(txtTelefone.Text);
                 fornecedor.Email = email;
+
 
                 await _fornecedorService.SalvarAsync(fornecedor);
 
@@ -301,6 +327,7 @@ namespace PDVStore.Forms
             _telefoneOriginal = string.Empty;
             _emailOriginal = string.Empty;
             txtNome.Focus();
+            txtInscricaoEstadual.Clear();
         }
     }
 }
