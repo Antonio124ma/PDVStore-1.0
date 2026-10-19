@@ -1,4 +1,4 @@
-using PDVStore.Helpers;
+﻿using PDVStore.Helpers;
 using PDVStore.Models;
 using PDVStore.Services;
 using System;
@@ -40,6 +40,7 @@ namespace PDVStore.Forms
         {
             _clienteService = clienteService ?? throw new ArgumentNullException(nameof(clienteService));
             BuildUI();
+            Tema.Aplicar(this);
             Load += async (_, _) => await CarregarAsync();
         }
 
@@ -53,6 +54,8 @@ namespace PDVStore.Forms
             Text = "Clientes (Fiado / Caderneta)";
             StartPosition = FormStartPosition.CenterScreen;
             ClientSize = new Size(1200, 600);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Font = new Font("Segoe UI", 10F);
             BackColor = Color.White;
 
@@ -91,7 +94,7 @@ namespace PDVStore.Forms
             btnReceber = new Button { Text = "Receber débito", Location = new Point(480, y + 36), Size = new Size(130, 32), BackColor = Color.DarkOrange, ForeColor = Color.White, FlatStyle = FlatStyle.Flat };
 
             var btnExportarPdf = new Button { Text = "Exportar PDF", Location = new Point(730, y + 36), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
-            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(850, y + 36), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
+            var btnExportarExcel = new Button { Text = "Exportar Excel", Location = new Point(860, y + 36), Size = new Size(120, 32), FlatStyle = FlatStyle.Flat };
 
             btnSalvar.Click += async (_, _) => await SalvarAsync();
             btnNovo.Click += (_, _) => LimparCampos();
@@ -271,6 +274,16 @@ namespace PDVStore.Forms
                     MessageBox.Show("Informe um e-mail válido.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+            }
+            if (!decimal.TryParse(txtLimite.Text, out decimal limite) || limite < 10)
+            {
+                MessageBox.Show("Informe um limite de crédito válido (número positivo e maior ou igual a 10).", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtEndereco.Text))
+            {
+                MessageBox.Show("Informe o endereço do cliente.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
             try

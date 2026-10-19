@@ -1,10 +1,11 @@
-using PDVStore.Models;
+﻿using PDVStore.Models;
 using PDVStore.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using PDVStore.Helpers;
 
 namespace PDVStore.Forms
 {
@@ -42,6 +43,7 @@ namespace PDVStore.Forms
             _fornecedorService = fornecedorService ?? throw new ArgumentNullException(nameof(fornecedorService));
             _estoqueService = estoqueService ?? throw new ArgumentNullException(nameof(estoqueService));
             BuildUI();
+            Tema.Aplicar(this);
             Load += async (_, _) => await CarregarAsync();
         }
 
@@ -94,10 +96,16 @@ namespace PDVStore.Forms
             foreach (DataGridViewColumn c in dgvItens.Columns) c.FillWeight = Math.Max(50, c.Width);
             dgvItens.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            var lblTotalLabel = new Label { Text = "Total:", Location = new Point(790, 148), AutoSize = true, Font = new Font("Segoe UI", 11F, FontStyle.Bold) };
-            lblTotal = new Label { Text = "R$ 0,00", Location = new Point(850, 145), AutoSize = true, Font = new Font("Segoe UI", 13F, FontStyle.Bold), ForeColor = Color.DarkGreen };
+            var lblTotalLabel = new Label { Text = "Total:", Location = new Point(780, 118), AutoSize = true, Font = new Font("Segoe UI", 11F, FontStyle.Bold) };
+            lblTotal = new Label { Text = "R$ 0,00", Location = new Point(840, 116), AutoSize = true, Font = new Font("Segoe UI", 13F, FontStyle.Bold), ForeColor = Color.DarkGreen };
+            // Adicione esta linha onde você configura as propriedades do seu Form
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            btnSalvar = new Button { Text = "Salvar compra", Location = new Point(820, 166), Size = new Size(160, 36), BackColor = Color.ForestGreen, ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold), FlatStyle = FlatStyle.Flat };
+            // Opcional: Desabilita também o botão de Maximizar (quadrado ao lado do X)
+            this.MaximizeBox = false;
+
+
+            btnSalvar = new Button { Text = "Salvar compra", Location = new Point(756, 160), Size = new Size(160, 36), BackColor = Color.ForestGreen, ForeColor = Color.White, Font = new Font("Segoe UI", 10F, FontStyle.Bold), FlatStyle = FlatStyle.Flat };
 
             grpRegistro.Controls.AddRange(new Control[] {
                 lblForne, cmbFornecedor, lblNota, txtNota, lblProduto, cmbProduto, lblQtd, txtQtd, lblCusto, txtCusto,
@@ -197,6 +205,12 @@ namespace PDVStore.Forms
                 MessageBox.Show("Informe um preço de custo válido.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (!decimal.TryParse(txtNota.Text, out decimal nota) || nota <= 0)
+            {
+                MessageBox.Show("Informe um número de nota válido.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
 
             var existente = _itens.FirstOrDefault(i => i.ProdutoId == produto.Id);
             if (existente != null)
@@ -249,6 +263,7 @@ namespace PDVStore.Forms
                 MessageBox.Show("Selecione um fornecedor.", "Atenção", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
 
             var compra = new Compra
             {
